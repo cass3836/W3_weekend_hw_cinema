@@ -66,4 +66,7 @@ def films()
   return result.map {|film| Film.new(film)}
 end
 
+# Buying tickets should decrease the funds of the customer by the price
+# Check how many tickets were bought by a customer
+# Check how many customers are going to watch a certain film
 end

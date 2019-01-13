@@ -21,6 +21,7 @@ def save()
   values = [@customer_id, @film_id]
   result = SqlRunner.run(sql, values)
   @id = result[0]['id'].to_i
+  update_funds()
 end
 
 def self.delete_all()
@@ -53,5 +54,36 @@ def update()
   values = [@customer_id, @film_id, @id]
   SqlRunner.run(sql, values)
 end
+
+# def update_funds()
+#   sql =
+#   "UPDATE customers
+#   INNER JOIN films
+#   ON films.id = tickets.film_id
+#   INNER JOIN customers
+#   ON customers.id = tickets.customer_id
+#   SET (customers.funds)
+#   = (customers.funds - films.price)
+#   WHERE tickets.id = $1"
+#   values = [@id]
+#   SqlRunner.run(sql, values)
+# end
+
+def new_fund_value()
+   sql = "SELECT * FROM tickets
+   INNER JOIN films on films.id = tickets.film_id
+   INNER JOIN customers ON customers.id = tickets.customer_id
+   WHERE tickets.id = $1"
+   values = [@id]
+   result = SqlRunner.run(sql, values).first
+   return result['funds'].to_i - result['price'].to_i
+end
+
+def update_funds()
+   new_funds = self.new_fund_value()
+   sql = "UPDATE customers SET funds = $1 WHERE id = $2"
+   values = [new_funds, @customer_id]
+   SqlRunner.run(sql, values)
+ end
 
 end
